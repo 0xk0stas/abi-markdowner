@@ -25,6 +25,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
 
+      - name: Build example SCSS
+        run: |
+          cd examples/adder/ && mxpy contract build && cd ../..
       - name: Run tests
         run: |
           pytest
