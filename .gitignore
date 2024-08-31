@@ -10,3 +10,6 @@ venv/
 *.egg-info/
 dist/
 build/
+
+# Example SCs
+.prepare_example_scs.sh
