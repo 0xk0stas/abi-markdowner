@@ -17,7 +17,8 @@ setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        "toml>=0.10.2"
+        "toml>=0.10.2",  # For reading TOML files
+        "pytest>=6.0"    # For testing
     ],
     entry_points={
         'console_scripts': [
