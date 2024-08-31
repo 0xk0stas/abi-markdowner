@@ -28,7 +28,7 @@ abi-markdowner
 
 Alternatively, you can pass another project directory as argument. For more information, check the `Parameters` section.
 
-## Parameters
+### Parameters
 
 - `--sc-path`:
 
@@ -98,6 +98,10 @@ Links
     - Devnet Deployments:
         - Address: erd1qqqqqqqqqqqqqpgqvn9ew0wwn7a3pk053ezex98497hd4exqdg0q8v2e0c
 ```
+
+## Tests
+
+Tests have not been added yet.
 
 ## License
 
