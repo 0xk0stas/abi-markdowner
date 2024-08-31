@@ -11,5 +11,6 @@ venv/
 dist/
 build/
 
-# Example SCs
+# Other
 .prepare_example_scs.sh
+*.lock
