@@ -19,6 +19,7 @@ setup(
     install_requires=[
         "toml>=0.10.2",  # For reading TOML files
         "pytest>=6.0"    # For testing
+        "multiversx-sdk-cli>=9.6.2"  # For interacting with the MultiversX blockchain
     ],
     entry_points={
         'console_scripts': [
