@@ -1,3 +1,2 @@
 toml>=0.10.2
 pytest>=6.0
-multiversx-sdk-cli>=9.6.2
