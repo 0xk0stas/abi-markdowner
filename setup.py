@@ -17,10 +17,7 @@ setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        "toml",
-        "json",
-        "os",
-        "argparse"
+        "toml>=0.10.2"
     ],
     entry_points={
         'console_scripts': [
