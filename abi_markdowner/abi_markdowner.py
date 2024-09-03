@@ -66,7 +66,8 @@ def generate_markdown_from_abi(abi, deployments):
             return "\n".join([f"{doc}\n" for doc in docs])
         return ""
     
-    markdown = f"# Smart Contract: {abi['name']}\n\n"
+    markdown = "<sub>*This file has been auto-generated using the [AbiMarkdowner](https://github.com/0xk0stas/AbiMarkdowner).*</sub>\n\n"
+    markdown += f"# Smart Contract: {abi['name']}\n\n"
 
     # General Documentation
     if 'docs' in abi:
