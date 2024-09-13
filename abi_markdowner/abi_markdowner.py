@@ -1,13 +1,61 @@
 # abi_markdowner.py
 
 def transform_type(abi_type):
-    """Transforms ABI type strings to desired format."""
-    if abi_type.startswith("variadic<"):
-        abi_type = abi_type.replace("variadic", "MultiValue")
-    if abi_type.startswith("optional<"):
-        abi_type = abi_type.replace("optional", "OptionalValue")
+    """Transforms ABI type strings to desired format and checks for Optional, List, and MultiValue."""
+    is_optional = False
+    is_multivalue = False
+    is_list = False
+    
+    raw_type = abi_type.replace("<", "&lt;").replace(">", "&gt;")
+
+    if "optional" in abi_type or "Option" in abi_type:
+        abi_type = abi_type.replace("optional<", "").replace("Option<", "")
+        # abi_type = abi_type[1:-1]
+        is_optional = True
+
+    if "List" in abi_type:
+        abi_type = abi_type.replace("List<", "")
+        # abi_type = abi_type[1:-1]
+        is_list = True
+
+    if "variadic" in abi_type:
+        abi_type = abi_type.replace("variadic<", "")
+        # abi_type = abi_type[1:-1]
+        is_multivalue = True
+
+    abi_type = abi_type.strip('>')
+    
     # Escape angle brackets for Markdown
-    return abi_type.replace("<", "&lt;").replace(">", "&gt;")
+    abi_type = abi_type.replace("<", "&lt;").replace(">", "&gt;")
+
+    if sum([is_optional, is_multivalue, is_list]) >= 2:
+        return abi_type, is_optional, is_list, is_multivalue, raw_type
+    else:
+        return abi_type, is_optional, is_list, is_multivalue, ""
+
+def generate_matrix(parameters, include_column_names=True):
+    """Generates a matrix for parameters."""
+    matrix = ""
+    if include_column_names:
+        matrix += "| Name | Type | Optional | List | MultiValue | Raw Type |\n"
+        matrix += "| - | - | - | - | - | - |\n"
+    else:
+        matrix += "| Type | Optional | List | MultiValue | Raw Type |\n"
+        matrix += "| - | - | - | - | - |\n"
+        
+    for param in parameters:
+        param_type, is_optional, is_list, is_multivalue, raw_type = transform_type(param['type'])
+        optional = "✔" if is_optional else ""
+        list = "✔" if is_list else ""
+        multivalue = "✔" if is_multivalue else ""
+        
+        if include_column_names:
+            param_name = param['name']
+            matrix += f"| {param_name} | {param_type} | {optional} | {list} | {multivalue} | {raw_type} |\n"
+        else:
+            matrix += f"| {param_type} | {optional} | {list} | {multivalue} | {raw_type} |\n"
+
+    return matrix
 
 def generate_links_section(deployments):
     """Generate the links section of the Markdown based on deployments."""
@@ -90,17 +138,26 @@ def generate_markdown_from_abi(abi, deployments):
     markdown += generate_links_section(deployments)
 
     # Table of Contents
-    markdown += "## Table of Contents\n\n"
-    markdown += "- [Types](#types)\n"
-    markdown += "- [Endpoints](#endpoints)\n"
-    markdown += "  - [Deployment - Upgrade](#deployment---upgrade)\n"
-    markdown += "  - [Owner Only](#owner-only)\n"
-    markdown += "  - [Other](#other)\n"
-    markdown += "- [Views](#views)\n"
-    markdown += "- [Events](#events)\n\n"
+    has_types = 'types' in abi and abi['types']
+    has_endpoints = 'endpoints' in abi and abi['endpoints']
+    has_views = 'endpoints' in abi and any(endpoint.get('mutability') == 'readonly' for endpoint in abi['endpoints'])
+    has_events = 'events' in abi and abi['events']
+    if has_types or has_endpoints or has_events:
+        markdown += "## Table of Contents\n\n"
+        if has_types:
+            markdown += "- [Types](#types)\n"
+        if has_endpoints:
+            markdown += "- [Endpoints](#endpoints)\n"
+            # markdown += "  - [Deployment - Upgrade](#deployment---upgrade)\n"
+            # markdown += "  - [Owner Only](#owner-only)\n"
+            # markdown += "  - [Other](#other)\n"
+        if has_views:
+            markdown += "- [Views](#views)\n"
+        if has_events:
+            markdown += "- [Events](#events)\n\n"
 
     # Types Section
-    if 'types' in abi:
+    if 'types' in abi and abi['types']:
         markdown += "## Types\n\n"
         for type_name, type_info in abi['types'].items():
             markdown += f"<details>\n<summary>{type_name}</summary>\n\n"
@@ -110,43 +167,64 @@ def generate_markdown_from_abi(abi, deployments):
                 markdown += "#### Enum Variants:\n"
                 for variant in type_info['variants']:
                     markdown += f"- **{variant['name']}** (Discriminant: {variant['discriminant']})\n"
+                markdown += "\n"
+
             elif type_info['type'] == 'struct':
                 markdown += "#### Struct Fields:\n"
-                for field in type_info['fields']:
-                    markdown += f"- **{field['name']}**: {transform_type(field['type'])}\n"
-            markdown += "\n</details>\n\n"
+                markdown += generate_matrix(type_info['fields']) + "\n"
+
+            markdown += "</details>\n\n"
 
     # Endpoints Section
-    markdown += "## Endpoints\n\n"
-
     def add_endpoint_section(title, endpoints):
         """Add a section for endpoints."""
         if endpoints:
-            markdown = f"### {title}\n\n"
+            markdown = f"### {title}\n\n" if title else ""
             for endpoint in endpoints:
                 markdown += f"<details>\n<summary>{endpoint['name']}</summary>\n\n"
+                markdown += add_docs(endpoint.get('docs'))
                 if 'payableInTokens' in endpoint:
                     payable_by = 'EGLD only' if endpoint['payableInTokens'][0] == 'EGLD' else 'any token'
-                    markdown += f"#### This endpoint is payable by {payable_by}.\n\n"
-                markdown += add_docs(endpoint.get('docs'))
+                    markdown += f"#### Note: This endpoint is payable by {payable_by}.\n\n"
                 if 'inputs' in endpoint and endpoint['inputs']:
                     markdown += "#### Inputs:\n"
-                    for inp in endpoint['inputs']:
-                        markdown += f"- **{inp['name']}**: {transform_type(inp['type'])}\n"
+                    markdown += generate_matrix(endpoint['inputs']) + "\n"
                 if 'outputs' in endpoint and endpoint['outputs']:
                     markdown += "#### Outputs:\n"
-                    for out in endpoint['outputs']:
-                        markdown += f"- **Type**: {transform_type(out['type'])}\n"
+                    markdown += generate_matrix(endpoint['outputs'], False) + "\n"
                 markdown += "\n</details>\n\n"
             return markdown
         return ""
+
+    markdown += "## Endpoints\n\n"
+    
+    # Deployment (Constructor)
+    if 'constructor' in abi:
+        markdown += "### Deployment - Upgrade\n\n"
+        markdown += "<details>\n<summary>init</summary>\n\n"
+        
+        markdown += add_docs(abi['constructor']['docs'])
+
+        markdown += "#### Inputs:\n"
+        markdown += generate_matrix(abi['constructor']['inputs'], False) + "\n"
+        markdown += "</details>\n\n"
+
+    # Upgrade Constructor
+    if 'upgradeConstructor' in abi:
+        markdown += "<details>\n<summary>upgrade</summary>\n\n"
+
+        markdown += add_docs(abi['upgradeConstructor']['docs'])
+
+        markdown += "#### Inputs:\n"
+        markdown += generate_matrix(abi['upgradeConstructor']['inputs'], False) + "\n"
+        markdown += "</details>\n\n"
 
     # Categorizing Endpoints
     owner_only_endpoints = []
     other_endpoints = []
     readonly_endpoints = []
 
-    if 'endpoints' in abi:
+    if 'endpoints' in abi and abi['endpoints']:
         for endpoint in abi['endpoints']:
             if endpoint.get('mutability') == 'readonly':
                 readonly_endpoints.append(endpoint)
@@ -161,7 +239,7 @@ def generate_markdown_from_abi(abi, deployments):
     # Views (Readonly Endpoints)
     if readonly_endpoints:
         markdown += "## Views\n\n"
-        markdown += add_endpoint_section("Views", readonly_endpoints)
+        markdown += add_endpoint_section("", readonly_endpoints)
 
     # Events Section
     if 'events' in abi:
@@ -171,11 +249,7 @@ def generate_markdown_from_abi(abi, deployments):
             markdown += add_docs(event.get('docs'))
             if 'inputs' in event and event['inputs']:
                 markdown += "#### Inputs:\n"
-                for inp in event['inputs']:
-                    markdown += f"- **{inp['name']}**: {transform_type(inp['type'])}"
-                    if inp.get('indexed', False):
-                        markdown += " (indexed)"
-                    markdown += "\n"
+                markdown += generate_matrix(event['inputs']) + "\n"
             markdown += "</details>\n\n"
 
     return markdown
