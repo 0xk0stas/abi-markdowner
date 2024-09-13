@@ -203,7 +203,7 @@ def generate_markdown_from_abi(abi, deployments):
         markdown += "### Deployment - Upgrade\n\n"
         markdown += "<details>\n<summary>init</summary>\n\n"
         
-        markdown += add_docs(abi['constructor']['docs'])
+        markdown += add_docs(abi['constructor'].get('docs'))
 
         markdown += "#### Inputs:\n"
         markdown += generate_matrix(abi['constructor']['inputs'], False) + "\n"
@@ -213,7 +213,7 @@ def generate_markdown_from_abi(abi, deployments):
     if 'upgradeConstructor' in abi:
         markdown += "<details>\n<summary>upgrade</summary>\n\n"
 
-        markdown += add_docs(abi['upgradeConstructor']['docs'])
+        markdown += add_docs(abi['upgradeConstructor'].get('docs'))
 
         markdown += "#### Inputs:\n"
         markdown += generate_matrix(abi['upgradeConstructor']['inputs'], False) + "\n"
