@@ -119,7 +119,9 @@ def generate_markdown_from_abi(abi, deployments):
 
     # General Documentation
     if 'docs' in abi:
+        markdown += "<details>\n<summary>Documentation</summary>\n\n"
         markdown += add_docs(abi['docs'])
+        markdown += "</details>\n\n"
 
     # Build Information Section
     if 'buildInfo' in abi:
