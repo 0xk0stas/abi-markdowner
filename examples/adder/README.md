@@ -6,7 +6,7 @@ One of the simplest smart contracts possible,
 
 it holds a single variable in storage, which anyone can increment.
 <details>
-<summary><b>`Build info`</b></summary>
+<summary>Build info</summary>
 
 - **Rustc Version**: 1.79.0
 - **Commit Hash**: 129f3b9964af4d4a709d1383930ade12dfe7c081
