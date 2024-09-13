@@ -1,14 +1,16 @@
+<sub>*This file has been auto-generated using the [AbiMarkdowner](https://github.com/0xk0stas/AbiMarkdowner).*</sub>
+
 # Smart Contract: Adder
 
 One of the simplest smart contracts possible,
 
 it holds a single variable in storage, which anyone can increment.
 <details>
-<summary>Build info</summary>
+<summary><b>`Build info`</b></summary>
 
-- **Rustc Version**: 1.80.1
-- **Commit Hash**: 3f5fd8dd41153bc5fdca9427e9e05be2c767ba23
-- **Commit Date**: 2024-08-06
+- **Rustc Version**: 1.79.0
+- **Commit Hash**: 129f3b9964af4d4a709d1383930ade12dfe7c081
+- **Commit Date**: 2024-06-10
 - **Channel**: Stable
 
 - **Framework**: multiversx-sc
@@ -17,17 +19,31 @@ it holds a single variable in storage, which anyone can increment.
 
 ## Table of Contents
 
-- [Types](#types)
 - [Endpoints](#endpoints)
-  - [Deployment - Upgrade](#deployment---upgrade)
-  - [Owner Only](#owner-only)
-  - [Other](#other)
 - [Views](#views)
-- [Events](#events)
-
-## Types
-
 ## Endpoints
+
+### Deployment - Upgrade
+
+<details>
+<summary>init</summary>
+
+#### Inputs:
+| Type | Optional | List | MultiValue | Raw Type |
+| - | - | - | - | - |
+| BigUint |  |  |  |  |
+
+</details>
+
+<details>
+<summary>upgrade</summary>
+
+#### Inputs:
+| Type | Optional | List | MultiValue | Raw Type |
+| - | - | - | - | - |
+| BigUint |  |  |  |  |
+
+</details>
 
 ### Other
 
@@ -36,19 +52,23 @@ it holds a single variable in storage, which anyone can increment.
 
 Add desired amount to the storage variable.
 #### Inputs:
-- **value**: BigUint
+| Name | Type | Optional | List | MultiValue | Raw Type |
+| - | - | - | - | - | - |
+| value | BigUint |  |  |  |  |
+
 
 </details>
 
 ## Views
 
-### Views
-
 <details>
 <summary>getSum</summary>
 
 #### Outputs:
-- **Type**: BigUint
+| Type | Optional | List | MultiValue | Raw Type |
+| - | - | - | - | - |
+| BigUint |  |  |  |  |
+
 
 </details>
 
