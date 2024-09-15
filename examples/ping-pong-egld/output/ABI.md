@@ -94,12 +94,12 @@ Necessary configuration when deploying:
 
 `max_funds` - optional funding cap, no more funds than this can be added to the contract.
 #### Inputs:
-| Name | Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - | - |
-| ping_amount | BigUint |  |  |  |  |
-| duration_in_seconds | u64 |  |  |  |  |
-| opt_activation_timestamp | u64 | ✔ |  |  |  |
-| max_funds | BigUint | ✔ |  |  |  |
+| Name | Type | Optional |
+| - | - | - |
+| ping_amount | BigUint |  |
+| duration_in_seconds | u64 |  |
+| opt_activation_timestamp | u64 | ✔ |
+| max_funds | BigUint | ✔ |
 
 
 </details>
@@ -115,9 +115,9 @@ Optional `_data` argument is ignored.
 #### Note: This endpoint is payable by EGLD only.
 
 #### Inputs:
-| Name | Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - | - |
-| _data | ignore |  |  |  |  |
+| Name | Type |
+| - | - |
+| _data | ignore |
 
 
 </details>
@@ -144,9 +144,9 @@ Returns
 
 Can only be called after expiration.
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| OperationCompletionStatus |  |  |  |  |
+| Type |
+| - |
+| OperationCompletionStatus |
 
 
 </details>
@@ -160,9 +160,9 @@ Lists the addresses of all users that have `ping`-ed,
 
 in the order they have `ping`-ed
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| Address |  |  | ✔ |  |
+| Type | MultiValue |
+| - | - |
+| Address | ✔ |
 
 
 </details>
@@ -171,9 +171,9 @@ in the order they have `ping`-ed
 <summary>getPingAmount</summary>
 
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| BigUint |  |  |  |  |
+| Type |
+| - |
+| BigUint |
 
 
 </details>
@@ -182,9 +182,9 @@ in the order they have `ping`-ed
 <summary>getDeadline</summary>
 
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| u64 |  |  |  |  |
+| Type |
+| - |
+| u64 |
 
 
 </details>
@@ -196,9 +196,9 @@ Block timestamp of the block where the contract got activated.
 
 If not specified in the constructor it is the the deploy block timestamp.
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| u64 |  |  |  |  |
+| Type |
+| - |
+| u64 |
 
 
 </details>
@@ -208,9 +208,9 @@ If not specified in the constructor it is the the deploy block timestamp.
 
 Optional funding cap.
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| BigUint | ✔ |  |  |  |
+| Type | Optional |
+| - | - |
+| BigUint | ✔ |
 
 
 </details>
@@ -226,14 +226,14 @@ State of user funds.
 
 2 - `pong`-ed
 #### Inputs:
-| Name | Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - | - |
-| user_id | u32 |  |  |  |  |
+| Name | Type |
+| - | - |
+| user_id | u32 |
 
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| UserStatus |  |  |  |  |
+| Type |
+| - |
+| UserStatus |
 
 
 </details>
@@ -245,9 +245,9 @@ Part of the `pongAll` status, the last user to be processed.
 
 0 if never called `pongAll` or `pongAll` completed..
 #### Outputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| u32 |  |  |  |  |
+| Type |
+| - |
+| u32 |
 
 
 </details>

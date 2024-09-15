@@ -26,29 +26,54 @@ def transform_type(abi_type):
     return abi_type, is_optional, is_list, is_multivalue, ""
 
 def generate_matrix(parameters, include_column_names=True):
-    """Generates a matrix for parameters."""
+    """Generates a matrix for parameters, omitting columns with no data."""
+    
+    # Prepare the headers and a list to track if each column has data
     headers = ["Type", "Optional", "List", "MultiValue", "Raw Type"]
     if include_column_names:
         headers.insert(0, "Name")
     
-    matrix = f"| {' | '.join(headers)} |\n"
-    matrix += f"| {' | '.join(['-'] * len(headers))} |\n"
-
+    # Initialize a list to track if each column has data
+    columns_data = [[] for _ in headers]  # Create a list of lists corresponding to the number of headers
+    
+    # Process each parameter and record the data for each column
     for param in parameters:
         param_type, is_optional, is_list, is_multivalue, raw_type = transform_type(param['type'])
+        
+        # Construct the row data for the parameter
         row_data = [
-            param['name'] if include_column_names else param_type,
-            param_type,
-            "✔" if is_optional else "",
-            "✔" if is_list else "",
-            "✔" if is_multivalue else "",
-            raw_type
+            param['name'] if include_column_names else param_type,  # Name (if included) or Type
+            param_type,  # Type
+            "✔" if is_optional else "",  # Optional
+            "✔" if is_list else "",  # List
+            "✔" if is_multivalue else "",  # MultiValue
+            raw_type  # Raw Type
         ]
+        
+        # Ensure that if 'include_column_names' is False, we don't add the 'Name' column
         if not include_column_names:
             row_data.pop(0)
-        matrix += f"| {' | '.join(row_data)} |\n"
-
+        
+        # Add data to the corresponding columns
+        for i, value in enumerate(row_data):
+            columns_data[i].append(value)
+    
+    # Identify columns with data (non-empty strings or check marks)
+    columns_to_include = [i for i, col in enumerate(columns_data) if any(col)]
+    
+    # Filter out columns without any data from headers and rows
+    final_headers = [headers[i] for i in columns_to_include]
+    matrix = f"| {' | '.join(final_headers)} |\n"
+    matrix += f"| {' | '.join(['-'] * len(final_headers))} |\n"
+    
+    # Build rows using only the columns that contain data
+    for row in zip(*columns_data):
+        final_row = [row[i] for i in columns_to_include]
+        matrix += f"| {' | '.join(final_row)} |\n"
+    
     return matrix
+
+
 
 def generate_links_section(deployments):
     """Generate the links section of the Markdown based on deployments."""
