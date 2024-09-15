@@ -5,7 +5,7 @@
 ## Features
 
 - **Convert ABI to Markdown:** Generates comprehensive Markdown documentation from smart contract ABI files.
-- **Customizable Output:** Organizes endpoints, views, events, and types with detailed descriptions and formatted tables.
+- **Customizable Output:** Organizes endpoints, views, events, and types with formatted tables and detailed descriptions based on documentations in the contracts.
 - **Matrix-Style Input/Output Tables:** Automatically formats function inputs and outputs into a clear matrix with support for optional and multi-value parameters.
 - **Automatic Table of Contents:** Includes a TOC for easy navigation within the generated documentation.
 - **Deployment Links:** Supports including multiple mainnet and devnet addresses with customizable labels from a `deployments.json` file.
