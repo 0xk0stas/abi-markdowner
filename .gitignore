@@ -12,6 +12,6 @@ dist/
 build/
 
 # Other
-.prepare_example_scs.sh
+prepare_example_scs.sh
 *.lock
-.create_release.sh
+create_release.sh
