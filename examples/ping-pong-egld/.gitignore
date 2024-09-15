@@ -1,0 +1,10 @@
+interaction
+interact
+/target/
+*/target/
+*.lock
+/output/*
+!/output/*.abi.json
+trace*.scen.json
+scenarios
+tests
