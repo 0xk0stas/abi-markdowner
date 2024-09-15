@@ -1,6 +1,6 @@
-# AbiMarkdowner
+# abi-markdowner
 
-**`AbiMarkdowner`** is a Python tool that converts MultiversX Smart Contract ABI (Application Binary Interface) files into structured and detailed Markdown documentation. This makes it easy to document, share, and understand smart contracts.
+**`abi-markdowner`** is a Python tool that converts MultiversX Smart Contract ABI (Application Binary Interface) files into structured and detailed Markdown documentation. This makes it easy to document, share, and understand smart contracts.
 
 ## Features
 
@@ -12,7 +12,7 @@
 
 ## Installation
 
-Install `AbiMarkdowner` using pip:
+Install `abi-markdowner` using pip:
 
 ```bash
 pip install abi-markdowner
@@ -105,7 +105,7 @@ Tests have not been added yet.
 
 ## License
 
-`AbiMarkdowner` is licensed under the MIT License. See the LICENSE file for more information.
+`abi-markdowner` is licensed under the MIT License. See the LICENSE file for more information.
 
 ## Contributing
 
