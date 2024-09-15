@@ -1,6 +1,6 @@
 # __init__.py
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 __author__ = "Kostas Tzoumpas"
 __license__ = "MIT"
 

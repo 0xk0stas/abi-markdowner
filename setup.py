@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="abi-markdowner",
-    version="0.1.7",
+    version="0.1.8",
     description="A tool to convert MultiversX Smart Contract ABI files into Markdown documentation.",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',

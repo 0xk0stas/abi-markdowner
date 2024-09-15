@@ -36,7 +36,6 @@ def parse_arguments():
 
 def load_cargo_toml(cargo_toml_path):
     """Load the Cargo.toml file and return the package name."""
-    print(f"Loading Cargo.toml from: {cargo_toml_path}")
     with open(cargo_toml_path, 'r') as file:
         cargo_toml = toml.load(file)
     return cargo_toml['package']['name']
