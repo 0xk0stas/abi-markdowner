@@ -3,8 +3,8 @@
 import json
 import toml
 import argparse
-from abi_markdowner.abi_markdowner import generate_markdown_from_abi
-from abi_markdowner.file_io import read_abi_from_file, save_markdown_to_file
+from abi_markdowner import generate_markdown_from_abi
+from file_io import read_abi_from_file, save_markdown_to_file
 
 # Default values
 SC_PATH = './'
@@ -14,22 +14,29 @@ DEPLOYMENTS_JSON_PATH = 'deployments.json'
 
 def parse_arguments():
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(description="Generate a markdown file from a Smart Contract ABI.")
+    parser = argparse.ArgumentParser(description="Generate README.md from ABI.")
     
+    # Define the sc-path argument
     parser.add_argument('--sc-path', type=str, default=SC_PATH, help="Path to the smart contract project.")
-    parser.add_argument('--output-file', type=str, default=lambda args: args.sc_path + OUTPUT_FILE_PATH, 
-                        help="Output file path for the generated Markdown.")
-    parser.add_argument('--cargo-toml', type=str, default=lambda args: args.sc_path + CARGO_TOML_PATH, 
-                        help="Path to Cargo.toml file.")
-    parser.add_argument('--deployments-json', type=str, default=lambda args: args.sc_path + DEPLOYMENTS_JSON_PATH, 
-                        help="Path to the deployments.json file.")
     
-    # Now parse all arguments
-    return parser.parse_args()
+    # Use a placeholder for the default values of the other arguments initially
+    parser.add_argument('--output-file', type=str, help="Output file path for the generated Markdown.")
+    parser.add_argument('--cargo-toml', type=str, help="Path to Cargo.toml file.")
+    parser.add_argument('--deployments-json', type=str, help="Path to the deployments.json file.")
 
+    # Now parse the arguments to get the value of sc-path
+    args = parser.parse_args()
+
+    # Set defaults based on the parsed sc-path
+    args.output_file = args.output_file or (args.sc_path + OUTPUT_FILE_PATH)
+    args.cargo_toml = args.cargo_toml or (args.sc_path + CARGO_TOML_PATH)
+    args.deployments_json = args.deployments_json or (args.sc_path + DEPLOYMENTS_JSON_PATH)
+
+    return args
 
 def load_cargo_toml(cargo_toml_path):
     """Load the Cargo.toml file and return the package name."""
+    print(f"Loading Cargo.toml from: {cargo_toml_path}")
     with open(cargo_toml_path, 'r') as file:
         cargo_toml = toml.load(file)
     return cargo_toml['package']['name']
