@@ -110,7 +110,7 @@ Links
 
 ## Tests
 
-Tests have not been added yet. (WIP)
+Tests have not been added yet.
 
 ## License
 
