@@ -59,6 +59,7 @@ It can be continued anytime.
 - [Types](#types)
 - [Endpoints](#endpoints)
 - [Views](#views)
+
 ## Types
 
 <details>
@@ -78,7 +79,7 @@ It can be continued anytime.
 
 ## Endpoints
 
-### Deployment - Upgrade
+### Deploy
 
 <details>
 <summary>init</summary>
@@ -93,12 +94,13 @@ Necessary configuration when deploying:
 
 `max_funds` - optional funding cap, no more funds than this can be added to the contract.
 #### Inputs:
-| Type | Optional | List | MultiValue | Raw Type |
-| - | - | - | - | - |
-| BigUint |  |  |  |  |
-| u64 |  |  |  |  |
-| u64 | ✔ |  |  |  |
-| BigUint | ✔ |  |  |  |
+| Name | Type | Optional | List | MultiValue | Raw Type |
+| - | - | - | - | - | - |
+| ping_amount | BigUint |  |  |  |  |
+| duration_in_seconds | u64 |  |  |  |  |
+| opt_activation_timestamp | u64 | ✔ |  |  |  |
+| max_funds | BigUint | ✔ |  |  |  |
+
 
 </details>
 
