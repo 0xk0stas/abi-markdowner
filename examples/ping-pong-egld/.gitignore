@@ -5,6 +5,7 @@ interact
 *.lock
 /output/*
 !/output/*.abi.json
+!/output/*.md
 trace*.scen.json
 scenarios
 tests

@@ -8,7 +8,7 @@ from file_io import read_abi_from_file, save_markdown_to_file
 
 # Default values
 SC_PATH = './'
-OUTPUT_FILE_PATH = 'ABI.md'
+OUTPUT_FILE_PATH = 'output/ABI.md'
 CARGO_TOML_PATH = 'Cargo.toml'
 DEPLOYMENTS_JSON_PATH = 'deployments.json'
 
