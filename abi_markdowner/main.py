@@ -3,8 +3,8 @@
 import json
 import toml
 import argparse
-from abi_markdowner import generate_markdown_from_abi
-from file_io import save_markdown_to_file, read_abi_from_file
+from abi_markdowner.abi_markdowner import generate_markdown_from_abi
+from abi_markdowner.file_io import read_abi_from_file, save_markdown_to_file
 
 # Default values
 SC_PATH = './'
