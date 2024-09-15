@@ -14,13 +14,19 @@ DEPLOYMENTS_JSON_PATH = 'deployments.json'
 
 def parse_arguments():
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(description="Generate README.md from ABI.")
+    parser = argparse.ArgumentParser(description="Generate a markdown file from a Smart Contract ABI.")
+    
     parser.add_argument('--sc-path', type=str, default=SC_PATH, help="Path to the smart contract project.")
-    sc_path = parser.parse_args().sc_path
-    parser.add_argument('--output-file', type=str, default=sc_path + OUTPUT_FILE_PATH, help="Output file path for the generated Markdown.")
-    parser.add_argument('--cargo-toml', type=str, default=sc_path + CARGO_TOML_PATH, help="Path to Cargo.toml file.")
-    parser.add_argument('--deployments-json', type=str, default=sc_path + DEPLOYMENTS_JSON_PATH, help="Path to the deployments.json file.")
+    parser.add_argument('--output-file', type=str, default=lambda args: args.sc_path + OUTPUT_FILE_PATH, 
+                        help="Output file path for the generated Markdown.")
+    parser.add_argument('--cargo-toml', type=str, default=lambda args: args.sc_path + CARGO_TOML_PATH, 
+                        help="Path to Cargo.toml file.")
+    parser.add_argument('--deployments-json', type=str, default=lambda args: args.sc_path + DEPLOYMENTS_JSON_PATH, 
+                        help="Path to the deployments.json file.")
+    
+    # Now parse all arguments
     return parser.parse_args()
+
 
 def load_cargo_toml(cargo_toml_path):
     """Load the Cargo.toml file and return the package name."""
