@@ -12,10 +12,16 @@
 
 ## Installation
 
-Install `abi-markdowner` using pip:
+Install `abi-markdowner` using pip
 
 ```bash
 pip install abi-markdowner
+```
+
+or pipx
+
+```bash
+pipx install abi-markdowner
 ```
 
 ## Usage
@@ -37,7 +43,7 @@ Alternatively, you can pass another project directory as argument. For more info
     Specify the path to your smart contract project containing the Cargo.toml and optionally the deployments.json files. The ABI file will be read from the output directory within this path.
 - `--output-file`:
 
-    (Optional - default is README.md in the `sc-path` directory)
+    (Optional - default is ABI.md in the `sc-path/output` directory)
     
     Specify the output file path for the generated Markdown.
 - `--cargo-toml`:
