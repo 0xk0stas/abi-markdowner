@@ -1,0 +1,2314 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.76.0-nightly",
+            "commitHash": "d86d65bbc19b928387f68427fcc3a0da498d8a19",
+            "commitDate": "2023-12-10",
+            "channel": "Nightly",
+            "short": "rustc 1.76.0-nightly (d86d65bbc 2023-12-10)"
+        },
+        "contractCrate": {
+            "name": "liquid-staking",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.47.8"
+        }
+    },
+    "name": "LiquidStaking",
+    "constructor": {
+        "docs": [
+            "Initializes the contract.",
+            "",
+            "# Arguments",
+            "",
+            "- `unbond_period` - the unbond period in epochs. Devnet has an unbond period of 1 epoch while Mainnet has an",
+            "  unbond period of 10 epochs",
+            "- `opt_admin` - the optional admin address",
+            ""
+        ],
+        "inputs": [
+            {
+                "name": "unbond_period",
+                "type": "u64"
+            },
+            {
+                "name": "opt_admin",
+                "type": "optional<Address>",
+                "multi_arg": true
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "upgrade",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Returns the current admin address.",
+                "",
+                "# Returns:",
+                "",
+                "- The current admin address.",
+                ""
+            ],
+            "name": "getAdmin",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the current pending admin address, if there is one.",
+                "",
+                "# Returns:",
+                "",
+                "- An `Option` containing the pending admin address if there is one, or `None` if there is not.",
+                ""
+            ],
+            "name": "getPendingAdmin",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Sets the pending admin address to the given address.",
+                "",
+                "# Arguments:",
+                "",
+                "- `new_pending_admin` - The new pending admin address.",
+                ""
+            ],
+            "name": "setPendingAdmin",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "pending_admin",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Attempts to accept the pending admin, which must be set first using the `set_pending_admin` endpoint."
+            ],
+            "name": "acceptAdmin",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "isLiquidStaking",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "isActive",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Returns the liquid staking token identifier",
+                ""
+            ],
+            "name": "getLsTokenId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Computes the current exchange rate in WAD between EGLD and sEGLD",
+                ""
+            ],
+            "name": "getExchangeRate",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Allows users to stake EGLD in exchange for sEGLD. The Delegation smart contract is selected based on the current",
+                "configuration of the delegation algorithm. However, this endpoint does not automatically perform the delegation.",
+                "Instead, anyone can perform the delegation at any given point in time using the `delegatePendingAmount` public",
+                "endpoint.",
+                "",
+                "# Notes",
+                "",
+                "- There is a minimum amount of 1 EGLD required for delegations.",
+                "- If the caller is whitelisted, they may bypass the delegation algorithm.",
+                "- The amount of sEGLD minted depends on the current exchange rate between EGLD and sEGLD.",
+                ""
+            ],
+            "name": "delegate",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Initiates the delegation of the pending amount to the specified Delegation smart contract. This endpoint",
+                "performs an asynchronous call to delegate the pending amount. It is capable of handling multiple calls, and the",
+                "execution order of their callbacks does not need to match the order of the original calls.",
+                "",
+                "# Arguments",
+                "",
+                "- `delegation_contract`: The Delegation smart contract to delegate to.",
+                "- `opt_egld_amount`: The optional EGLD amount to delegate. If not specified, it will delegate the entire pending",
+                "  amount.",
+                "",
+                "# Notes",
+                "",
+                "- This endpoint can be called by anyone.",
+                "- The EGLD amount can be smaller than the pending amount if it exceeds the capacity of the Delegation smart",
+                "  contract.",
+                "- If the delegation fails, the pending amount will be reverted, and the Delegation smart contract will be marked",
+                "  as outdated. A new attempt with a smaller EGLD amount can be made later.",
+                "- If there is pending amount that cannot be delegated, the admin can penalize the Delegation smart contract and",
+                "  delegate that amount to a different Delegation smart contract.",
+                ""
+            ],
+            "name": "delegatePendingAmount",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                },
+                {
+                    "name": "opt_egld_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Issues the liquid staking token, namely the sEGLD token.",
+                "",
+                "# Arguments",
+                "",
+                "- `name` - the token name",
+                "- `ticker` - the token ticker or symbol",
+                "- `decimals` - the token decimals",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "registerLsToken",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "ticker",
+                    "type": "bytes"
+                },
+                {
+                    "name": "decimals",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Gives Mint and Burn roles for sEGLD to this contract.",
+                ""
+            ],
+            "name": "setLsTokenRoles",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Issues the Undelegate Nft, the token minted at undelegations as a receipt.",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "registerUndelegateToken",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "ticker",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Gives Mint and Burn roles for the Undelegate Nft to this contract.",
+                ""
+            ],
+            "name": "setUndelegateTokenRoles",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets the Data Manager entitled to change the data associated to each Delegation smart contract.",
+                "",
+                "# Arguments",
+                "",
+                "- `new_data_manager` - the address of the new Data Manager",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "setDataManager",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "new_data_manager",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Activates the Liquid Staking Module state. The activation can only occur iff:",
+                "",
+                "- the total fee has been set",
+                "- the Liquid Staking token has been issued",
+                "- the undelegate NFT has been issued",
+                "- the delegation score model has been defined",
+                "- the data manager has been set",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "setStateActive",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Deactivates the Liquid Staking Module state.",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "setStateInactive",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Whitelists a Staking Provider Delegation smart contract. From this point onwards, this smart contract will be",
+                "eligible as a Delegation smart contract based on the state of the delegation algorithm. This method can also be",
+                "used to whitelist a previously blacklisted Delegation smart contract.",
+                "",
+                "# Arguments",
+                "",
+                "- `contract` - the Delegation smart contract address",
+                "- `admin` - the address entitled to update this Delegation smart contract data",
+                "- `total_value_locked` - the liquidity locked at the Delegation smart contract",
+                "- `nr_nodes` - the number of validator nodes",
+                "- `apr` - the current APR for the validator",
+                "- `service_fee` - the service fee being charged by the validator",
+                "- `opt_cap` - the maximum amount that can be locked at the Delegation smart contract (uncapped if `None`)",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- it will compute a delegation score based on the current state of the delegation algorithm",
+                ""
+            ],
+            "name": "whitelistDelegationContract",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                },
+                {
+                    "name": "total_value_locked",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "nr_nodes",
+                    "type": "u64"
+                },
+                {
+                    "name": "apr",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "service_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opt_cap",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Blacklists a Delegation smart contract. From this point onwards, this smart contract will not be eligible as a",
+                "Delegation smart contract through the delegation algorithm.",
+                "",
+                "# Arguments",
+                "",
+                "- `delegation_contract` - the Delegation smart contract address",
+                ""
+            ],
+            "name": "blacklistDelegationContract",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Updates the data for a given Staking Provider Delegation smart contract.",
+                "",
+                "# Arguments",
+                "",
+                "- `contract` - the Delegation smart contract address",
+                "- `admin` - the address entitled to update this Delegation smart contract data",
+                "- `total_value_locked` - the liquidity locked at the Delegation smart contract",
+                "- `nr_nodes` - the number of validator nodes",
+                "- `apr` - the current APR for the validator",
+                "- `service_fee` - the service fee being charged by the validator",
+                "- `opt_cap` - the maximum amount that can be locked at the Delegation smart contract (uncapped if `None`)",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin set for the Delegation smart contract data",
+                "- will revert if the contract has been blacklisted",
+                "- it will compute a delegation score based on the current state of the delegation algorithm",
+                ""
+            ],
+            "name": "changeDelegationContractParams",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                },
+                {
+                    "name": "total_value_locked",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "nr_nodes",
+                    "type": "u64"
+                },
+                {
+                    "name": "apr",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "service_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opt_cap",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Withdraws a given amount of EGLD from the protocol reserves to an optionally given account.",
+                "",
+                "# Arguments",
+                "",
+                "- `egld_amount` - the amount of EGLD to withdraw",
+                "- `opt_to` - an optional address to send the EGLD to",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- the EGLD amount is directed to the admin account if none is provided",
+                ""
+            ],
+            "name": "withdrawReserve",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opt_to",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets the total fee, which represents the final fee end users see discounted from their rewards based on the",
+                "service fee charged by each Staking Provider and by this Liquid Staking protocol. For example, if a Staking",
+                "Provider has a service fee of 7% and the total fee is set to 17%, the Liquid Staking Protocol will charge a 10%",
+                "fee from the total rewards.",
+                "",
+                "# Arguments",
+                "",
+                "- `fee` - the total fee in basis points",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "setTotalFee",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "fee",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets the Delegation Score Model parameters used for the computation of the delegation score for each Staking",
+                "Provider Delegation smart contract. Higher scores imply better chances of being selected at delegations as well",
+                "as lower chances of being selected for undelegations.",
+                "",
+                "# Arguments",
+                "",
+                "- `method` - the score can be based only on Total Value Locked, APR or a weighted mix of both parameters",
+                "- `min_tvl` - Delegation smart contracts with lower TVLs than this parameters share the same TVL score",
+                "- `max_tvl` - Delegation smart contracts with higher TVLs than this parameters share the same TVL score",
+                "- `min_apr` - Delegation smart contracts with lower APRs than this parameters share the same APR score (in bps)",
+                "- `max_apr` - Delegation smart contracts with higher APRs than this parameters share the same APR score (in bps)",
+                "- `opt_omega` - should be given only for a Mixed delegation score method and defines the weight for both TVL and",
+                "  APR scores",
+                "- `sort` - if true, the list of Delegation smart contracts will be sorted based on the new delegation score",
+                "  model parameters. If false, the sorting is left to `changeDelegationContractParams`.",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "setDelegationScoreModelParams",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "method",
+                    "type": "DelegationScoreMethod"
+                },
+                {
+                    "name": "min_tvl",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_tvl",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "min_apr",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_apr",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "sort",
+                    "type": "bool"
+                },
+                {
+                    "name": "opt_omega",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Sets the Delegation Sampling Model parameters used for the random selection between candidates on a computed",
+                "list of Staking Providers Delegation smart contracts.",
+                "",
+                "# Arguments",
+                "",
+                "- `tolerance` - the tolerance (as percentage and as bps) used to build the list of candidates",
+                "- `max_service_fee` - from this point onwards, staking providers do not receive delegations in bps",
+                "- `premium` - the difference between the delegation weight at service_fee = 0 and the delegation weight at",
+                "  service_fee = max_service_fee in bps",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "setDelegationSamplingModelParams",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "tolerance",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_service_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "premium",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Clears the Delegation Sampling Model, i.e. removes the sampling from delegation and undelegation candidates.",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "clearDelegationSamplingModel",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "A public endpoint that allows to start bypassing the undelegation algorithm in order to undelegate and,",
+                "consequently, withdraw EGLD from the protocol.",
+                "",
+                "# Notes",
+                "",
+                "- can be called by anyone after `NO_UNDELEGATIONS_EPOCHS` have passed since the last undelegation",
+                ""
+            ],
+            "name": "deactivateUndelegationAlgorithm",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "An admin endpoint that reactivates the undelegation algorithm.",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                "- can only be reactivated after `NO_UNDELEGATIONS_EPOCHS + COOLDOWN_REACTIVATE_UNDELEGATION_ALGORITHM` have",
+                "  elapsed since the last undelegation",
+                ""
+            ],
+            "name": "reactivateUndelegationAlgorithm",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Adds an entry to the migration whitelist. This whitelist allows users to bypass the Delegation Algorithm for",
+                "delegates.",
+                "",
+                "# Arguments",
+                "",
+                "- `user` - the user that wil be entitled to bypass the delegation algorithm",
+                "- `delegation_contract` - the Delegation smart contract",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "addToMigrationWhitelist",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                },
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Removes an entry from the migration whitelist.",
+                "",
+                "# Arguments",
+                "",
+                "- `user` - the user that is currently entitled to bypass the delegation algorithm",
+                "",
+                "# Notes",
+                "",
+                "- can only be called by the admin",
+                ""
+            ],
+            "name": "removeFromMigrationWhitelist",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Removes the caller from the migration whitelist.",
+                ""
+            ],
+            "name": "removeMeFromMigrationWhitelist",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Allows anyone to claim rewards from a given Delegation smart contract.",
+                "",
+                "# Arguments",
+                "",
+                "- `delegation_contract` - the Delegation smart contract address",
+                ""
+            ],
+            "name": "claimRewardsFrom",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Allows anyone to delegate EGLD rewards balance to a staking provider based on the current configuration of the",
+                "delegation algorithm. If the delegation is successful, the callback updates the storage. Otherwise, it sets the",
+                "Delegation smart contract data as outdated. Notice that the smart contract data will be outdated until it is updated.",
+                "",
+                "# Arguments",
+                "",
+                "- `opt_egld_amount` - an optional amount of EGLD from the rewards balance to delegate",
+                ""
+            ],
+            "name": "delegateRewards",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "opt_egld_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "The current state of the Liquid Staking module"
+            ],
+            "name": "getState",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "State"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The current outstanding supply of sEGLD or the current amount of total shares"
+            ],
+            "name": "getLsSupply",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The NFT given in exchange for sEGLD at unDelegations"
+            ],
+            "name": "getUndelegateTokenId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "TokenIdentifier"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The Undelegate NFT name"
+            ],
+            "name": "getUndelegateTokenName",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "bytes"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The current amount of EGLD being staked via Liquid Staking amongst all the whitelisted Staking Providers"
+            ],
+            "name": "getCashReserve",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The current amount of rewards in EGLD"
+            ],
+            "name": "getRewardsReserve",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The current amount of EGLD that belongs to the protocol"
+            ],
+            "name": "getProtocolReserves",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The current total amount of EGLD being undelegated from all staking providers"
+            ],
+            "name": "getTotalUndelegated",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The current total amount of EGLD that can be unbonded or withdraw from all staking providers"
+            ],
+            "name": "getTotalWithdrawable",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Penalties by their identifiers"
+            ],
+            "name": "getPenaltyById",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Penalty"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The next penalty identifier"
+            ],
+            "name": "getNextPenaltyId",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "A linked list of Delegation smart contracts ordered by their delegation score"
+            ],
+            "name": "getDelegationContractsList",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Allows users to delegate their EGLD to a given staking provider Delegation smart contract bypassing the Delegation",
+                "Algorithm"
+            ],
+            "name": "getMigrationWhitelist",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "name": "getNumWhitelistedUsers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "A list of blacklisted Delegation smart contracts"
+            ],
+            "name": "getBlacklistedDelegationContracts",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The metadata for each Delegation smart contract"
+            ],
+            "name": "getDelegationContractData",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "DelegationContractData"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The undelegation mode"
+            ],
+            "name": "getUndelegationMode",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "UndelegationMode"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The last epoch a successful undelegation occur when the undelegation mode is of `Algorithm` type"
+            ],
+            "name": "getLastUndelegateEpoch",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The last epoch a successful contract data update occur"
+            ],
+            "name": "getLastContractDataUpdateEpoch",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The last epoch rewards have been claimed for a given Staking Provider Delegation smart contract"
+            ],
+            "name": "getLastClaimRewardsEpoch",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The period between undelegations and unbonds"
+            ],
+            "name": "getUnbondPeriod",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The final fee charged to users, including staking providers service fee and liquid staking fee"
+            ],
+            "name": "getTotalFee",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The Delegation Score model parameters"
+            ],
+            "name": "getDelegationScoreModel",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "DelegationScoreModel"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "The Delegation Sampling model parameters"
+            ],
+            "name": "getDelegationSamplingModel",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "SamplingModel"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores the Delegation smart contract data manager address"
+            ],
+            "name": "getDataManager",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Stores the random oracle address, used only for testing purposes"
+            ],
+            "name": "getRandomOracle",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "Address"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Allows users to redeem sEGLD in exchange for EGLD. Instead of immediately sending the EGLD to the user, an",
+                "undelegate NFT is minted and sent to the user. This NFT can be redeemed for EGLD once the unbond period has",
+                "passed through the `unbond` endpoint. The paid sEGLD is burned.",
+                "",
+                "If not provided, the Delegation smart contract for the undelegation is selected based on the current",
+                "configuration of the delegation algorithm. On the other hand, the Delegation smart contract can be specified",
+                "only if the undelegation mode is set to `Free`.",
+                "",
+                "Notice that this endpoint does not automatically perform the undelegation. Instead, anyone can perform the",
+                "undelegation at any given point in time using the `unDelegatePendingAmount` public endpoint.",
+                "",
+                "# Arguments",
+                "",
+                "- `opt_delegation_contract`: The address of the Delegation smart contract to undelegate from",
+                "",
+                "# Notes",
+                "",
+                "- There is a minimum amount of 1 EGLD for undelegations, which corresponds to a minimum amount of sEGLD",
+                "  depending on the current exchange rate.",
+                ""
+            ],
+            "name": "unDelegate",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "opt_delegation_contract",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "EsdtTokenPayment"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Initiates the undelegation of the pending amount from the specified Delegation smart contract. This endpoint",
+                "performs an asynchronous call to the Delegation smart contract to undelegate the pending amount. It is capable",
+                "of handling multiple calls, and the execution order of their callbacks does not need to match the order of the",
+                "original calls.",
+                "",
+                "# Arguments",
+                "",
+                "- `delegation_contract`: The address of the Delegation smart contract to undelegate from.",
+                "",
+                "# Notes",
+                "",
+                "- This endpoint can be called by anyone.",
+                "- There is no need to provide an optional argument for the amount of EGLD to undelegate. The pending amount to",
+                "  undelegate should always be sufficient and prevent leaving dust at the Delegation smart contract. Both the",
+                "  `undelegate` and `penalty_from_undelegation` functions ensure the adequacy of the pending amount.",
+                ""
+            ],
+            "name": "unDelegatePendingAmount",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Allows users to redeem undelegate NFTs in exchange for EGLD once the unbond period has passed. To successfully",
+                "redeem the EGLD, it must already be in the liquid staking smart contract. Therefore, the public endpoint",
+                "`withdrawFrom` should have been called prior to using this function. If the redemption is successful, the NFT is",
+                "burned, and the corresponding EGLD amount is sent to the caller.",
+                ""
+            ],
+            "name": "withdraw",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Initiates the withdrawal of the withdrawable amount from the specified Delegation smart contract. This endpoint",
+                "performs an asynchronous call to withdraw the amount that has been previously undelegated and has passed the",
+                "unbond period. It is capable of handling multiple calls, and the execution order of their callbacks does not",
+                "need to match the order of the original calls.",
+                "",
+                "# Arguments",
+                "",
+                "- `delegation_contract`: The address of the Delegation smart contract to withdraw from.",
+                "",
+                "# Notes",
+                "",
+                "- This endpoint can be called by anyone.",
+                "- It only needs to be called once per epoch.",
+                ""
+            ],
+            "name": "withdrawFrom",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Initiates a penalty to a Delegation smart contract. Penalties reduce the staked amount of a Delegation smart",
+                "contract through two different mechanisms:",
+                "",
+                "1. By undelegating an amount of EGLD from the Delegation smart contract.",
+                "2. By reducing the pending amount of EGLD to be delegated to the Delegation smart contract.",
+                "",
+                "The first mechanism can only be triggered by the admin when detecting misbehavior from the Staking Agency",
+                "associated with the Delegation smart contract. This penalty must be unbonded from the Delegation smart contract",
+                "at a future time using the `unbondPenalty` public endpoint.",
+                "",
+                "The second mechanism can be triggered by the admin in cases of Staking Agency misbehavior or when there is a",
+                "pending amount to be delegated that cannot be deposited due to current cap and total value locked values. The",
+                "community may also initiate this penalty if specific conditions are met. Since this penalty affects the pending",
+                "amount to be delegated, the EGLD is already present and does not need to be withdrawn. Therefore, the penalty is",
+                "marked as `withdrawn`.",
+                "",
+                "Finally, all penalties need to be delegated to a new Delegation smart contract. This is achieved by calling the",
+                "`delegatePenalty` endpoint. If for some reason this is not done, user will eventually have the chance to",
+                "undelegate from penalties.",
+                "",
+                "# Arguments",
+                "",
+                "- `delegation_contract`: The address of the Delegation smart contract.",
+                "- `source`: The source or type of the penalty.",
+                "- `opt_egld_amount`: The amount of EGLD to penalize. If unspecified, it defaults to the total delegated or",
+                "  pending amount to be delegated.",
+                ""
+            ],
+            "name": "penalize",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                },
+                {
+                    "name": "source",
+                    "type": "PenaltySource"
+                },
+                {
+                    "name": "opt_egld_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Marks a penalty as withdrawn once the unbond period has passed. In order to be successful, the EGLD must be",
+                "already in the liquid staking smart contract. For that reason, the public endpoint `withdrawFrom` should have",
+                "been already called before this point.",
+                "",
+                "# Arguments",
+                "",
+                "- `penalty_id` - the penalty identifier",
+                ""
+            ],
+            "name": "withdrawPenalty",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "penalty_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "Allows anyone to delegate a Penalty to a new Delegation smart contract based on the current configuration of the",
+                "delegation algorithm, avoiding the penalized Delegation smart contract. Similarly to `delegate`, it does not",
+                "perform the delegation automatically, but it can be done by anyone at any given point in time using the",
+                "`delegatePendingAmount` public endpoint.",
+                "",
+                "# Arguments",
+                "",
+                "- `penalty_id` - the penalty identifier",
+                "- `opt_egld_amount` - the amount of EGLD to delegate. If unspecified, it defaults to the penalty amount",
+                ""
+            ],
+            "name": "delegatePenalty",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "penalty_id",
+                    "type": "u64"
+                },
+                {
+                    "name": "opt_egld_amount",
+                    "type": "optional<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "docs": [
+                "A public endpoint that allows users to withdraw from penalties when the undelegation mode is set to `Free`.",
+                "Since penalties must be already marked as `withdrawn`, which means that the EGLD is already available at this",
+                "smart contract, the EGLD is sent directly to the user and the penalty is updated or cleared.",
+                "",
+                "# Arguments",
+                "",
+                "- `penalty_id` - the penalty identifier",
+                ""
+            ],
+            "name": "withdrawFromPenalty",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "penalty_id",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        }
+    ],
+    "events": [
+        {
+            "docs": [
+                "Event emitted when the pending admin is updated."
+            ],
+            "identifier": "new_pending_admin_event",
+            "inputs": [
+                {
+                    "name": "pending_admin",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Event emitted when the admin is updated."
+            ],
+            "identifier": "new_admin_event",
+            "inputs": [
+                {
+                    "name": "admin",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when unbond period is set"
+            ],
+            "identifier": "set_unbond_period_event",
+            "inputs": [
+                {
+                    "name": "unbond_period",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the undelegation mode is set"
+            ],
+            "identifier": "set_undelegation_mode_event",
+            "inputs": [
+                {
+                    "name": "undelegation_mode",
+                    "type": "UndelegationMode",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the last undelegate epoch is set"
+            ],
+            "identifier": "set_last_undelegate_epoch_event",
+            "inputs": [
+                {
+                    "name": "last_undelegate_epoch",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the last contract data update epoch is set"
+            ],
+            "identifier": "set_last_contract_data_update_epoch_event",
+            "inputs": [
+                {
+                    "name": "last_undelegate_epoch",
+                    "type": "u64",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the liquid staking token is registered"
+            ],
+            "identifier": "register_ls_token_event",
+            "inputs": [
+                {
+                    "name": "ls_token_id",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the undelegate nft is registered"
+            ],
+            "identifier": "register_undelegate_token_event",
+            "inputs": [
+                {
+                    "name": "undelegate_id",
+                    "type": "TokenIdentifier",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a new data manager is set"
+            ],
+            "identifier": "new_data_manager_event",
+            "inputs": [
+                {
+                    "name": "old",
+                    "type": "Option<Address>",
+                    "indexed": true
+                },
+                {
+                    "name": "new",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the delegation score model parameters are set or modified"
+            ],
+            "identifier": "set_delegation_score_model_params_event",
+            "inputs": [
+                {
+                    "name": "score_model",
+                    "type": "DelegationScoreModel",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the delegation sampling model parameters are set or modified"
+            ],
+            "identifier": "set_delegation_sampling_model_params_event",
+            "inputs": [
+                {
+                    "name": "sampling_model",
+                    "type": "SamplingModel",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the total fee is set or modified"
+            ],
+            "identifier": "set_total_fee_event",
+            "inputs": [
+                {
+                    "name": "total_fee",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the delegation sampling model is removed"
+            ],
+            "identifier": "clear_delegation_sampling_model_event",
+            "inputs": []
+        },
+        {
+            "docs": [
+                "Emitted when the liquid staking state modified"
+            ],
+            "identifier": "set_state_event",
+            "inputs": [
+                {
+                    "name": "active",
+                    "type": "bool",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a Delegation smart contract is whitelisted"
+            ],
+            "identifier": "whitelist_delegation_contract_event",
+            "inputs": [
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a Delegation smart contract is blacklisted"
+            ],
+            "identifier": "blacklist_delegation_contract_event",
+            "inputs": [
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the Delegation smart contract params are modified"
+            ],
+            "identifier": "change_delegation_contract_params_event",
+            "inputs": [
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a user delegates to Liquid Staking"
+            ],
+            "identifier": "delegate_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "shares",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a pending amount is delegated to a Delegation smart contract"
+            ],
+            "identifier": "delegate_pending_amount_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a user undelegates from Liquid Staking"
+            ],
+            "identifier": "undelegate_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "undelegate_token_nonce",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "undelegate_attrs",
+                    "type": "UndelegateAttributes",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a pending amount is undelegated from a Delegation smart contract"
+            ],
+            "identifier": "undelegate_pending_amount_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a user withdraws EGLD from Liquid Staking"
+            ],
+            "identifier": "withdraw_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "undelegate_token_nonce",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when an amount of EGLD in withdrawn from a Delegation smart contract"
+            ],
+            "identifier": "withdraw_from_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the admin penalizes via an undelegation from a specific Delegation smart contract"
+            ],
+            "identifier": "penalty_from_undelegation_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "penalty",
+                    "type": "Penalty",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a Delegation smart contract is penalized reducing its pending to delegate amount"
+            ],
+            "identifier": "penalty_from_pending_to_delegate_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "penalty",
+                    "type": "Penalty",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a penalty is marked as withdrawn"
+            ],
+            "identifier": "withdraw_penalty_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "penalty_id",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a penalty in its whole or a part of it is delegated"
+            ],
+            "identifier": "delegate_penalty_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "penalty_id",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when a user withdraws from a penalty in the Free mode"
+            ],
+            "identifier": "withdraw_from_penalty_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "penalty_id",
+                    "type": "u64",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "shares",
+                    "type": "BigUint",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when anyone claims rewards"
+            ],
+            "identifier": "claim_rewards_from_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "reserves_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "rewards_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the admin delegates rewards"
+            ],
+            "identifier": "delegate_rewards_event",
+            "inputs": [
+                {
+                    "name": "account",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "contract_data",
+                    "type": "DelegationContractData",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when the admin withdraws funds from the protocol reserve"
+            ],
+            "identifier": "withdraw_reserve_event",
+            "inputs": [
+                {
+                    "name": "caller",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "withdraw_amount",
+                    "type": "BigUint",
+                    "indexed": true
+                },
+                {
+                    "name": "to",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Adds a user to the migration whitelist"
+            ],
+            "identifier": "add_to_migration_whitelist_event",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address",
+                    "indexed": true
+                },
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Removes a user from the migration whitelist"
+            ],
+            "identifier": "remove_from_migration_whitelist_event",
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when an async call fails"
+            ],
+            "identifier": "async_call_error_event",
+            "inputs": [
+                {
+                    "name": "error_code",
+                    "type": "u32",
+                    "indexed": true
+                },
+                {
+                    "name": "error_msg",
+                    "type": "bytes",
+                    "indexed": true
+                }
+            ]
+        },
+        {
+            "docs": [
+                "Emitted when an async call fails and contract data is outdated"
+            ],
+            "identifier": "outdated_event",
+            "inputs": [
+                {
+                    "name": "contract",
+                    "type": "Address",
+                    "indexed": true
+                }
+            ]
+        }
+    ],
+    "esdtAttributes": [],
+    "hasCallback": true,
+    "types": {
+        "DelegationContractData": {
+            "type": "struct",
+            "fields": [
+                {
+                    "docs": [
+                        "The staking provider smart contract address"
+                    ],
+                    "name": "contract",
+                    "type": "Address"
+                },
+                {
+                    "docs": [
+                        "The total value locked at the staking provider smart contract"
+                    ],
+                    "name": "total_value_locked",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "The cap amount for the staking provider smart contract if existent"
+                    ],
+                    "name": "cap",
+                    "type": "Option<BigUint>"
+                },
+                {
+                    "docs": [
+                        "The number of nodes"
+                    ],
+                    "name": "nr_nodes",
+                    "type": "u64"
+                },
+                {
+                    "docs": [
+                        "The Staking Provider APR"
+                    ],
+                    "name": "apr",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "The Staking Provider service fee"
+                    ],
+                    "name": "service_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "The current delegation score based on the configuration of the delegation algorithm"
+                    ],
+                    "name": "delegation_score",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Tracks the liquid staking smart contract delegated amount to a staking provider smart contract that has not been",
+                        "delegated yet but is pending to be delegated"
+                    ],
+                    "name": "pending_to_delegate",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Tracks the liquid staking smart contract delegated amount to a staking provider smart contract that has not been",
+                        "undelegated yet"
+                    ],
+                    "name": "total_delegated",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Tracks the liquid staking smart contract undelegated amount from a staking provider smart contract that has not",
+                        "been undelegated yet but is pending to be undelegated"
+                    ],
+                    "name": "pending_to_undelegate",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Tracks the liquid staking smart contract undelegated amount from a staking provider smart contract that has not",
+                        "been withdrawn  yet"
+                    ],
+                    "name": "total_undelegated",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Tracks the liquid staking smart contract withdrawable amount from a staking provider smart contract. In other",
+                        "words, it is the amount ready to be withdrawn that has been brought from this Delegation smart contract"
+                    ],
+                    "name": "total_withdrawable",
+                    "type": "BigUint"
+                },
+                {
+                    "docs": [
+                        "Indicates whether this data is updated or outdated"
+                    ],
+                    "name": "outdated",
+                    "type": "bool"
+                },
+                {
+                    "docs": [
+                        "Indicates whether this Staking Provider has been blacklisted"
+                    ],
+                    "name": "blacklisted",
+                    "type": "bool"
+                }
+            ]
+        },
+        "DelegationScoreMethod": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "Tvl",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Apr",
+                    "discriminant": 1
+                },
+                {
+                    "name": "Mixed",
+                    "discriminant": 2
+                }
+            ]
+        },
+        "DelegationScoreModel": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "method",
+                    "type": "DelegationScoreMethod"
+                },
+                {
+                    "name": "min_tvl",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_tvl",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "min_apr",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_apr",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "omega",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "EsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "Penalty": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "u64"
+                },
+                {
+                    "name": "withdrawn",
+                    "type": "bool"
+                },
+                {
+                    "name": "attributes",
+                    "type": "UndelegateAttributes"
+                }
+            ]
+        },
+        "PenaltySource": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "FromUndelegate",
+                    "discriminant": 0
+                },
+                {
+                    "name": "FromPendingToDelegate",
+                    "discriminant": 1
+                }
+            ]
+        },
+        "SamplingModel": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "tolerance",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_service_fee",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "premium",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "State": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "Inactive",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Active",
+                    "discriminant": 1
+                }
+            ]
+        },
+        "UndelegateAttributes": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "delegation_contract",
+                    "type": "Address"
+                },
+                {
+                    "name": "egld_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "shares",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "undelegate_epoch",
+                    "type": "u64"
+                },
+                {
+                    "name": "unbond_epoch",
+                    "type": "u64"
+                }
+            ]
+        },
+        "UndelegationMode": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "None",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Algorithm",
+                    "discriminant": 1
+                },
+                {
+                    "name": "Open",
+                    "discriminant": 2
+                }
+            ]
+        }
+    }
+}
