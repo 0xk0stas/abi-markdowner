@@ -9,3 +9,7 @@ interact
 trace*.scen.json
 scenarios
 tests
+src
+wasm
+multiversx.json
+meta
