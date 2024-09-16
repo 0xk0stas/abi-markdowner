@@ -250,6 +250,11 @@ in the order they have `ping`-ed
 
 </details>
 
+###
+
+Alternatively, take a look at the ABI documentation of a [Hatom Smart Contract](https://github.com/0xk0stas/abi-markdowner/blob/main/examples/hatom-liquid-staking-release/liquid-staking/output/ABI.md).
+
+
 ## Features
 
 - **Convert ABI to Markdown:** Generates comprehensive Markdown documentation from smart contract ABI files.
