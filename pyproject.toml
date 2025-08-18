@@ -26,7 +26,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Documentation",
-    "Topic :: Software Development :: Code Generators",
     "Topic :: Utilities",
 ]
 keywords = ["multiversx", "abi", "documentation", "markdown", "smart-contracts"]
