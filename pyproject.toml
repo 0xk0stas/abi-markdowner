@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "abi-markdowner"
-version = "0.1.17"
+version = "0.1.19"
 description = "A tool to convert MultiversX Smart Contract ABI files into Markdown documentation."
 readme = "README.md"
 license-files = ["LICENSE"]
