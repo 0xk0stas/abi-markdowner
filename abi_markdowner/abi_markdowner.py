@@ -132,13 +132,13 @@ def generate_markdown_from_abi(abi, deployments):
 
     # Build Information Section
     if 'buildInfo' in abi:
-        rustc_info = abi['buildInfo']['rustc']
+        # rustc_info = abi['buildInfo']['rustc']
         framework_info = abi['buildInfo']['framework']
         markdown += "<details>\n<summary>Build info</summary>\n\n"
-        markdown += f"- **Rustc Version**: {rustc_info['version']}\n"
-        markdown += f"- **Commit Hash**: {rustc_info['commitHash']}\n"
-        markdown += f"- **Commit Date**: {rustc_info['commitDate']}\n"
-        markdown += f"- **Channel**: {rustc_info['channel']}\n\n"
+        # markdown += f"- **Rustc Version**: {rustc_info['version']}\n"
+        # markdown += f"- **Commit Hash**: {rustc_info['commitHash']}\n"
+        # markdown += f"- **Commit Date**: {rustc_info['commitDate']}\n"
+        # markdown += f"- **Channel**: {rustc_info['channel']}\n\n"
         markdown += f"- **Framework**: {framework_info['name']}\n"
         markdown += f"- **Version**: {framework_info['version']}\n"
         markdown += "</details>\n\n"
